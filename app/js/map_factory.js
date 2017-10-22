@@ -1,26 +1,44 @@
-app.service('mapService', ['$http', function($http) {
-  let self = this;
+app.factory('MapService', MapService);
 
-  self.getNearby = function(center, radius, keyword) {
-    let url = buildUrl(center, radius, keyword)
+MapService.$inject = ['NgMap'];
 
-    $http({
-      method: 'GET',
-      url: url
-    }).then(function(res) {
-      return res
+function MapService(NgMap) {
+
+  let instance = {}
+
+  return {
+    init: init,
+    instance: instance,
+    center: center,
+    createMarkers: createMarkers
+  };
+
+  function init() {
+    NgMap.getMap().then(function(map) {
+      instance.places = new google.maps.places.PlacesService(map);
+      instance.map = map;
     });
   }
 
-  let buildUrl = function(center, radius, keyword) {
-    let baseUrl = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-    let url = baseUrl;
-
-    url += 'location=' + center.latitude + ',' + center.longitude
-    url += '&radius=' + radius;
-    url += '&keyword=' + keyword;
-
-    return url
+  function center(marker) {
+    instance.map.panTo(marker);
+    instance.map.setZoom(13);
   }
 
-}]);
+  function createMarkers(places) {
+    let markers = places.map(function(place, index) {
+      return {
+        id: index,
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+        title: place.name,
+        address: place.formatted_address.split(',')
+      }
+    });
+
+    return markers;
+  }
+
+}
+
+

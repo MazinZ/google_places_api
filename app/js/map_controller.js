@@ -1,87 +1,44 @@
-app.controller('mapController', ['$scope', 'mapService', 'NgMap',
-  function($scope, mapService, NgMap) {
+app.controller('MapController', MapController);
 
-    $scope.placeList = []
-    $scope.markers = [];
-    
-    NgMap.getMap().then(function(map) {
-      $scope.map = map;
-      $scope.service =  new google.maps.places.PlacesService(map);
-    });
+MapController.$inject = ['MapService', 'SearchService'];
 
-    $scope.search = function() {
-      deleteMarkers();
-      let text = this.getPlace();
-      let request = {
-        query: text.name
-      }
+function MapController(MapService, SearchService) {
 
-      if (!text) {
-        return;
-      }
+  let vm = this;
+  
+  vm.placeList = [];
+  vm.markers = [];
+  vm.userLocation;
 
-      if ($scope.userLocation) {
-        request.location = $scope.userLocation;
-        request.radius = 500;
-      }
+  MapService.init();
 
-      $scope.service.textSearch(request, searchCallback);
+  vm.openMarkerInfo = function(marker) {
+    vm.selectedMarker = marker;
+    MapService.instance.map.showInfoWindow('marker-info', `marker-${marker.id}`);
+    MapService.center(marker);
+  }
+
+  vm.setActive = function(event, index) {
+    let marker = vm.markers[index];
+    vm.activeItem = index;
+    vm.openMarkerInfo(marker);
+  }
+
+  vm.search = function() {
+    vm.markers = [];
+    let text = this.getPlace();
+    if (text) {
+      SearchService.textSearch(text, vm.userLocation)
+        .then(function(res) {
+          vm.placeList = res;
+          vm.markers = MapService.createMarkers(res)
+          MapService.center(vm.markers[0]);
+      })
     }
+  }
 
-    let searchCallback = function(res, status, pagination) {
-      if (status !== google.maps.places.PlacesServiceStatus.OK) {
-        return;
-      }
-      $scope.formatResults(res)
-      let defaultCenter = $scope.markers[0];
-      centerMap(defaultCenter);
-      console.log(res)
-    }
+  vm.setUserLocation = function() {
+    vm.userLocation = MapService.instance.map.getCenter();
+  }
 
-    $scope.setUserLocation = function() {
-      $scope.userLocation = $scope.map.getCenter();
-    }
-
-    let centerMap = function(marker) {
-      $scope.map.panTo(marker);
-      $scope.map.setZoom(13);
-    }
-
-    $scope.formatResults = function(res) {
-      $scope.placeList = res;
-      $scope.markers = createMarkers(res);
-      $scope.$apply();
-    }
-
-    $scope.openMarkerInfo = function(marker) {
-      console.log(marker)
-      $scope.selectedMarker = marker;
-      $scope.map.showInfoWindow('marker-info', `marker-${marker.id}`);
-      centerMap(marker);
-    }
-
-    $scope.setActive = function(event, index) {
-      $scope.activeItem = index;
-      console.log($scope.markers, index);
-      let marker = $scope.markers[index];
-      $scope.openMarkerInfo(marker);
-    }
-
-    let createMarkers = function(places) {
-      let markers = places.map(function(place, index) {
-        return {
-          id: index,
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-          title: place.name,
-          address: place.formatted_address.split(',')
-        }
-      });
-      return markers;
-    }
-
-    let deleteMarkers = function() {
-      $scope.markers = [];
-    }
-
-}]);
+}
