@@ -1,0 +1,62 @@
+<html ng-app="zenefitsMap">
+  <head>
+  <title>Zenefits map</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="./bower_components/angular/angular.js"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8iBZcEhmC4z-cVHYYenLxZl7Kl4qlCGQ&libraries=places"></script>
+  <script src="./app/build/all.js"></script>
+
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+  <script src="./bower_components/ngmap/build/scripts/ng-map.min.js"></script>
+  <script src="./bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
+  <script src="./bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="./app/build/main.css">
+
+  </head>
+  <body ng-controller="mapController">
+    <div id="right-panel" ng-class="{ expanded : placeList.length > 1 }">
+    <input places-auto-complete on-place-changed="search()"/>
+      <div ng-if="placeList.length > 1">
+        <hr>
+        <!-- <h2>Results</h2> -->
+        <div map-sidebar class="list-group sidebar" id="places">
+            <div ng-repeat="place in placeList">
+              <a href="#" class="map-card list-group-item" ng-click="setActive($event, $index)" ng-class="{active : activeItem === $index}">
+                <h5 class="mb-1 font-weight-bold">{{place.name}}</h5>
+                <div ng-if="place.rating" class="label label-default">{{place.rating}}</div>
+                <span uib-rating ng-model="place.rating" read-only="true"> </span> <br>
+                <small ng-if="place.price_level" class="text-muted"> {{'$'.repeat(place.price_level)}}&nbsp;&bull; </small>
+                <small class="text-muted"> {{stripAddress(place.formatted_address)}}</small>
+              </a>
+            </div>
+        </div>
+      </div>
+      <br>
+      <small ng-if="placeList.length > 1" class="text-muted"> Displaying {{placeList.length}} results </small>
+    </div>
+    <ng-map center='current-position' geo-fallback-center="[40.74, -98.6]" geo-callback="setUserLocation(e)" zoom="6">
+      <div ng-repeat="marker in markers">
+        <marker
+          id="marker-{{marker.id}}"
+          position="{{marker.lat}}, {{marker.lng}}"
+          on-click="setActive(marker.id)">
+        </marker>
+        <info-window id="marker-info">
+          <div ng-non-bindable="">
+            <h5>{{selectedMarker.title}}</h5>
+            <div ng-repeat="field in selectedMarker.address">
+               {{field}}
+              <br/>
+            </div>
+          </div>
+        </info-window>
+      </div>
+    </ng-map>
+  </body>
+
+
+</html>
