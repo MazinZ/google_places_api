@@ -51,6 +51,7 @@
             MapService.center(vm.markers[0]);
             MapService.setZoom(13);
           }, function(err){
+            vm.placeList = [];
             return err;
           });
       }
