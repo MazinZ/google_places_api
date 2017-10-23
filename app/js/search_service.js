@@ -1,6 +1,7 @@
 (function() {
-
-  app.factory('SearchService', SearchService);
+  angular
+      .module('zenefitsMap')
+      .factory('SearchService', SearchService);
 
   SearchService.$inject = ['$q', 'MapService'];
 
@@ -14,12 +15,10 @@
       let request = {
         query: text.name
       };
-
       if (userLocation) {
         request.location = userLocation;
         request.radius = 500;
       }
-
       let d = $q.defer();
       MapService.instance.places.textSearch(request,
         function(res, status) {

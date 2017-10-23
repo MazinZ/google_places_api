@@ -23,20 +23,20 @@
         <hr>
         <div class="list-group sidebar" id="places">
             <div ng-repeat="place in vm.placeList">
-              <a href="#" class="map-card list-group-item" ng-click="vm.setActive($event, $index)" ng-class="{active : vm.activeItem === $index}">
+              <a href="javascript:void(0)" class="map-card list-group-item" ng-click="vm.setActive($event, $index)" ng-class="{active : vm.activeItem === $index}">
                 <h5 class="mb-1 font-weight-bold header">{{place.name}}</h5>
-                <div ng-if="place.rating"> 
+                <div ng-if="place.rating">
                   <div class="label-small label-theme-default">{{place.rating}}</div>
                   <span uib-rating ng-model="place.rating" read-only="true"> </span> <br>
                 </div>
                 <small ng-if="place.price_level" class="text-muted"> {{'$'.repeat(place.price_level)}}&nbsp;&bull; </small>
-                <small class="text-muted"> {{place.formatted_address}}</small>
+                <small class="text-muted"> {{place.formatted_address}} </small>
               </a>
             </div>
         </div>
       </div>
       <br>
-      <small ng-if="vm.placeList.length > 1" class="text-muted"> Displaying {{vm.placeList.length}} results </small>
+      <small ng-if="vm.placeList.length > 1" class="text-muted list-pagination"> Displaying {{vm.placeList.length}} results </small>
     </div>
     <ng-map on-tilesloaded="vm.setMapLoaded()" center='current-position' geo-fallback-center="[40.74, -98.6]" geo-callback="vm.setUserLocation()" zoom="6">
       <div ng-repeat="marker in vm.markers">

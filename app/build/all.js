@@ -1,18 +1,24 @@
 'use strict';
 
-let app_name = 'zenefitsMap';
-let app = angular.module(app_name, ['ngMap', 'ui.bootstrap']);
+angular
+    .module('zenefitsMap', [
+      'ngMap', 
+      'ui.bootstrap'
+    ]);
 
-angular.module(app_name)
-  .config(['$locationProvider', 
-    function($locationProvider) {
-      $locationProvider.html5Mode(true);
-      $locationProvider.hashPrefix('!');
-}]);
+angular
+    .module('zenefitsMap')
+    .config(config);
+
+function config($locationProvider) {
+  $locationProvider.html5Mode(true);
+  $locationProvider.hashPrefix('!');
+}
 
 (function() {
-
-  app.controller('MapController', MapController);
+  angular
+      .module('zenefitsMap')
+      .controller('MapController', MapController);
 
   MapController.$inject = ['MapService', 'SearchService'];
 
@@ -58,7 +64,7 @@ angular.module(app_name)
         SearchService.textSearch(text, vm.userLocation)
           .then(function(res) {
             vm.placeList = res;
-            vm.markers = MapService.createMarkers(res)
+            vm.markers = MapService.createMarkers(res);
             MapService.center(vm.markers[0]);
             MapService.setZoom(13);
           }, function(err){
@@ -75,8 +81,9 @@ angular.module(app_name)
 })();
 
 (function() {
-
-  app.factory('MapService', MapService);
+  angular
+      .module('zenefitsMap')
+      .factory('MapService', MapService);
 
   MapService.$inject = ['NgMap'];
 
@@ -85,10 +92,10 @@ angular.module(app_name)
     let instance = {};
 
     return {
-      init: init,
-      instance: instance,
       center: center,
       createMarkers: createMarkers,
+      init: init,
+      instance: instance,
       setZoom: setZoom
     };
 
@@ -102,7 +109,7 @@ angular.module(app_name)
     function center(marker) {
       instance.map.panTo(marker);
     }
-    
+
     function setZoom(num) {
       instance.map.setZoom(num);
     }
@@ -125,8 +132,9 @@ angular.module(app_name)
 })();
 
 (function() {
-
-  app.factory('SearchService', SearchService);
+  angular
+      .module('zenefitsMap')
+      .factory('SearchService', SearchService);
 
   SearchService.$inject = ['$q', 'MapService'];
 
@@ -140,12 +148,10 @@ angular.module(app_name)
       let request = {
         query: text.name
       };
-
       if (userLocation) {
         request.location = userLocation;
         request.radius = 500;
       }
-
       let d = $q.defer();
       MapService.instance.places.textSearch(request,
         function(res, status) {

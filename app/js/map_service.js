@@ -1,6 +1,7 @@
 (function() {
-
-  app.factory('MapService', MapService);
+  angular
+      .module('zenefitsMap')
+      .factory('MapService', MapService);
 
   MapService.$inject = ['NgMap'];
 
@@ -9,10 +10,10 @@
     let instance = {};
 
     return {
-      init: init,
-      instance: instance,
       center: center,
       createMarkers: createMarkers,
+      init: init,
+      instance: instance,
       setZoom: setZoom
     };
 
@@ -26,7 +27,7 @@
     function center(marker) {
       instance.map.panTo(marker);
     }
-    
+
     function setZoom(num) {
       instance.map.setZoom(num);
     }

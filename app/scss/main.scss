@@ -22,6 +22,11 @@ html, body {
   background: #F0F0F0;
   max-height: 100%;
   box-shadow: 0 8px 16px rgba(168, 168, 168, 0.5);
+  padding-bottom: 20px;
+
+  .list-pagination {
+    margin-left: 20px
+  }
 
   &.expanded {
     height: 100%;
@@ -49,11 +54,6 @@ html, body {
   color: #979797;
   border-color: #979797;
   background-color: #F2F2F2;
-  &.active {
-    color: #fff;
-    border-color: #979797;
-    background: transparent;
-  }
 }
 
 .list-group {
@@ -70,18 +70,21 @@ html, body {
     font-weight: 600;
     color: #000;
   }
+
   .glyphicon-star {
     color: #3AADFF;
     &.active {
       color: rgb(14, 10, 10);
     }
   }
+
   .glyphicon-star-empty {
     color: #D8D8D8;
     &.active {
       color: #fff;
     }
   }
+
   &.active > * {
     color: #fff;
   }
@@ -93,7 +96,7 @@ html, body {
     border-radius: 0;
     background-color: #46494c;
   }
-  .label-default {
+  .label-theme-default {
     color: #fff;
     border-color: #979797;
     background: transparent;
@@ -104,6 +107,7 @@ html, body {
   -webkit-appearance: none;
   width: 7px;
 }
+
 ::-webkit-scrollbar-thumb {
   background-color: rgba(0,0,0,.5);
   box-shadow: 0 0 1px rgba(255,255,255,.5);

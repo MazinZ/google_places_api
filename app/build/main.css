@@ -19,7 +19,10 @@ html, body {
   z-index: 5;
   background: #F0F0F0;
   max-height: 100%;
-  box-shadow: 0 8px 16px rgba(168, 168, 168, 0.5); }
+  box-shadow: 0 8px 16px rgba(168, 168, 168, 0.5);
+  padding-bottom: 20px; }
+  .list-wrapper .list-pagination {
+    margin-left: 20px; }
   .list-wrapper.expanded {
     height: 100%; }
   .list-wrapper hr {
@@ -41,10 +44,6 @@ html, body {
   color: #979797;
   border-color: #979797;
   background-color: #F2F2F2; }
-  .label-theme-default.active {
-    color: #fff;
-    border-color: #979797;
-    background: transparent; }
 
 .list-group {
   padding: 0;
@@ -76,7 +75,7 @@ html, body {
   border-radius: 0;
   background-color: #46494c; }
 
-.list-group-item.active .label-default {
+.list-group-item.active .label-theme-default {
   color: #fff;
   border-color: #979797;
   background: transparent; }

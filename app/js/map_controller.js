@@ -1,6 +1,7 @@
 (function() {
-
-  app.controller('MapController', MapController);
+  angular
+      .module('zenefitsMap')
+      .controller('MapController', MapController);
 
   MapController.$inject = ['MapService', 'SearchService'];
 
@@ -46,7 +47,7 @@
         SearchService.textSearch(text, vm.userLocation)
           .then(function(res) {
             vm.placeList = res;
-            vm.markers = MapService.createMarkers(res)
+            vm.markers = MapService.createMarkers(res);
             MapService.center(vm.markers[0]);
             MapService.setZoom(13);
           }, function(err){
