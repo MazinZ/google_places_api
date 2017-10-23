@@ -1,10 +1,12 @@
 ## Setting up the project
 From the zenefits_project directory:
 
-$ `npm install -g gulp`
-$ `npm install && bower install`
-$ `gulp`
-$ `open index.html`
+```
+$ npm install -g gulp
+$ npm install && bower install
+$ gulp
+$ open index.html
+```
 
 ## Ideas for improvement
 
