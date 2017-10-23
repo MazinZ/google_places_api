@@ -1,9 +1,13 @@
 ## Setting up the project
+
+You'll need `npm`, `bower`, and `gulp`.
+
 From the zenefits_task directory:
 
 ```
 $ npm install -g gulp
-$ npm install && bower install
+$ npm install
+$ bower install
 $ gulp
 $ open index.html
 ```
