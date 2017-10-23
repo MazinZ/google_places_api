@@ -1,15 +1,11 @@
-#map {
-  height: 100%;
-}
-
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Open Sans', Helvetica, sans-serif;  
+  font-family: 'Open Sans', Helvetica, sans-serif;
 }
 
-#right-panel input {
+#search-bar {
   font-size: 14px;
   height: 40px;
   width: 95%;
@@ -19,11 +15,11 @@ html, body {
   margin: 8px;
 }
 
-#right-panel {
+.list-wrapper {
   position: absolute;
   width: 350px;
   z-index: 5;
-  background: #F0F0F0; //e4e4e4
+  background: #F0F0F0;
   max-height: 100%;
   box-shadow: 0 8px 16px rgba(168, 168, 168, 0.5);
 
@@ -35,22 +31,8 @@ html, body {
     border-top: 1px solid #979797;
   }
 }
-h5 {
-  font-weight: 600;
-  color: #000;
-}
-.sidebar {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  height: 80%;
-  width: 100%;
-  overflow-y: scroll;
-  border-bottom: 1px #777 solid;
-}
 
-
-.label {
+.label-small {
   display: inline;
   padding: .04em .3em;
   font-size: 75%;
@@ -63,46 +45,46 @@ h5 {
   border: 1px solid;
 }
 
-.label-default {
+.label-theme-default {
   color: #979797;
-  // border: 1px #979797 solid;
   border-color: #979797;
   background-color: #F2F2F2;
   &.active {
     color: #fff;
-    border-color: #979797;    
+    border-color: #979797;
     background: transparent;
   }
 }
 
-.glyphicon-star {
-  color: #3AADFF;
-  &.active {
-    color: #fff;
-  }
+.list-group {
+  padding: 0;
+  margin: 0;
+  height: 80%;
+  width: 100%;
+  overflow-y: scroll;
+  border-bottom: 1px #777 solid;
 }
 
-.glyphicon-star-empty {
-  color: #D8D8D8;
-  &.active {
-    color: #fff;
+.list-group-item {
+  .header {
+    font-weight: 600;
+    color: #000;
   }
-}
-
-.map-card {
+  .glyphicon-star {
+    color: #3AADFF;
+    &.active {
+      color: rgb(14, 10, 10);
+    }
+  }
+  .glyphicon-star-empty {
+    color: #D8D8D8;
+    &.active {
+      color: #fff;
+    }
+  }
   &.active > * {
     color: #fff;
   }
-}
-
-
-::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: 7px;
-}
-::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,.5);
-  box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
 
 .list-group-item.active {
@@ -116,4 +98,13 @@ h5 {
     border-color: #979797;
     background: transparent;
   }
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,.5);
+  box-shadow: 0 0 1px rgba(255,255,255,.5);
 }

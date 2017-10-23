@@ -17,16 +17,16 @@
   </head>
 
   <body ng-controller="MapController as vm">
-    <div id="right-panel" ng-class="{ expanded : vm.placeList.length > 1 }">
-    <input ng-disabled="!vm.mapLoaded" places-auto-complete on-place-changed="vm.search()" placeholder="Search..."/>
+    <div class="list-wrapper" ng-class="{ expanded : vm.placeList.length > 1 }">
+    <input id="search-bar" ng-disabled="!vm.mapLoaded" places-auto-complete on-place-changed="vm.search()" placeholder="Search..."/>
       <div ng-if="vm.placeList.length > 1">
         <hr>
         <div class="list-group sidebar" id="places">
             <div ng-repeat="place in vm.placeList">
               <a href="#" class="map-card list-group-item" ng-click="vm.setActive($event, $index)" ng-class="{active : vm.activeItem === $index}">
-                <h5 class="mb-1 font-weight-bold">{{place.name}}</h5>
+                <h5 class="mb-1 font-weight-bold header">{{place.name}}</h5>
                 <div ng-if="place.rating"> 
-                  <div class="label label-default">{{place.rating}}</div>
+                  <div class="label-small label-theme-default">{{place.rating}}</div>
                   <span uib-rating ng-model="place.rating" read-only="true"> </span> <br>
                 </div>
                 <small ng-if="place.price_level" class="text-muted"> {{'$'.repeat(place.price_level)}}&nbsp;&bull; </small>
