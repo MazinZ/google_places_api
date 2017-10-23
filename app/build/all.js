@@ -1,86 +1,113 @@
-'use strict'
+'use strict';
 
 let app_name = 'zenefitsMap';
 let app = angular.module(app_name, ['ngMap', 'ui.bootstrap']);
-let googleApiKey = 'AIzaSyB4zFI8kyKxdfeVObr9HepKiWxztFZzKRA'
 
 angular.module(app_name)
   .config(['$locationProvider', 
     function($locationProvider) {
       $locationProvider.html5Mode(true);
       $locationProvider.hashPrefix('!');
-
 }]);
-app.controller('mapController', ['$scope', 'mapService', 'NgMap',
-  function($scope, mapService, NgMap) {
 
-    $scope.placeList = []
-    $scope.markers = [];
-    
-    NgMap.getMap().then(function(map) {
-      $scope.map = map;
-      $scope.service =  new google.maps.places.PlacesService(map);
-    });
+(function() {
 
-    $scope.search = function() {
-      deleteMarkers();
+  app.controller('MapController', MapController);
+
+  MapController.$inject = ['MapService', 'SearchService'];
+
+  function MapController(MapService, SearchService) {
+
+    let vm = this;
+    vm.placeList = [];
+    vm.markers = [];
+
+    vm.openMarkerInfo = openMarkerInfo;
+    vm.onCloseMarker = onCloseMarker;
+    vm.search = search;
+    vm.setActive = setActive;
+    vm.setMapLoaded = setMapLoaded;
+    vm.setUserLocation = setUserLocation;
+
+    MapService.init();
+
+    function onCloseMarker() {
+      vm.activeItem = null;
+    }
+
+    function openMarkerInfo(marker) {
+      vm.selectedMarker = marker;
+      MapService.instance.map.showInfoWindow('marker-info', `marker-${marker.id}`);
+      MapService.center(marker);
+    }
+
+    function setActive(event, index) {
+      let marker = vm.markers[index];
+      vm.activeItem = index;
+      vm.openMarkerInfo(marker);
+    }
+
+    function setMapLoaded() {
+      vm.mapLoaded = true;
+    }
+
+    function search() {
       let text = this.getPlace();
-      let request = {
-        query: text.name
+      if (text.name) {
+        vm.markers = [];
+        SearchService.textSearch(text, vm.userLocation)
+          .then(function(res) {
+            vm.placeList = res;
+            vm.markers = MapService.createMarkers(res)
+            MapService.center(vm.markers[0]);
+            MapService.setZoom(13);
+          }, function(err){
+            return err;
+          });
       }
-
-      if (!text) {
-        return;
-      }
-
-      if ($scope.userLocation) {
-        request.location = $scope.userLocation;
-        request.radius = 500;
-      }
-
-      $scope.service.textSearch(request, searchCallback);
     }
 
-    let searchCallback = function(res, status, pagination) {
-      if (status !== google.maps.places.PlacesServiceStatus.OK) {
-        return;
-      }
-      $scope.formatResults(res)
-      let defaultCenter = $scope.markers[0];
-      centerMap(defaultCenter);
-      console.log(res)
+    function setUserLocation() {
+      vm.userLocation = MapService.instance.map.getCenter();
+    }
+  }
+
+})();
+
+(function() {
+
+  app.factory('MapService', MapService);
+
+  MapService.$inject = ['NgMap'];
+
+  function MapService(NgMap) {
+
+    let instance = {};
+
+    return {
+      init: init,
+      instance: instance,
+      center: center,
+      createMarkers: createMarkers,
+      setZoom: setZoom
+    };
+
+    function init() {
+      NgMap.getMap().then(function(map) {
+        instance.places = new google.maps.places.PlacesService(map);
+        instance.map = map;
+      });
     }
 
-    $scope.setUserLocation = function() {
-      $scope.userLocation = $scope.map.getCenter();
+    function center(marker) {
+      instance.map.panTo(marker);
+    }
+    
+    function setZoom(num) {
+      instance.map.setZoom(num);
     }
 
-    let centerMap = function(marker) {
-      $scope.map.panTo(marker);
-      $scope.map.setZoom(13);
-    }
-
-    $scope.formatResults = function(res) {
-      $scope.placeList = res;
-      $scope.markers = createMarkers(res);
-      $scope.$apply();
-    }
-
-    $scope.openMarkerInfo = function(marker) {
-      console.log(marker)
-      $scope.selectedMarker = marker;
-      $scope.map.showInfoWindow('marker-info', `marker-${marker.id}`);
-      centerMap(marker);
-    }
-
-    $scope.setActive = function(event, index) {
-      $scope.activeItem = index;
-      console.log($scope.markers, index);
-      let marker = $scope.markers[index];
-      $scope.openMarkerInfo(marker);
-    }
-
-    let createMarkers = function(places) {
+    function createMarkers(places) {
       let markers = places.map(function(place, index) {
         return {
           id: index,
@@ -88,88 +115,50 @@ app.controller('mapController', ['$scope', 'mapService', 'NgMap',
           lng: place.geometry.location.lng(),
           title: place.name,
           address: place.formatted_address.split(',')
-        }
+        };
       });
+
       return markers;
     }
+  }
 
-    let deleteMarkers = function() {
-      $scope.markers = [];
-    }
+})();
 
-}]);
+(function() {
 
-app.directive('mapSidebar', [function() {
-  return {
-    restrict: 'EA',
-    scope: false,
-    link: function(scope, ele, attrs) {
-      // scope.activeItem = -1;
-      
-      // scope.setActive = function(index) {
-      //   scope.activeItem = index;
-      //   let marker = scope.markers[index]
-      //   scope.openMarkerInfo(scope.map, marker)
-      // }
+  app.factory('SearchService', SearchService);
 
-      scope.stripAddress = function(address) {
-        if (scope.userLocation) {
-           return address.split(',')[0]
-        }
-        return address
+  SearchService.$inject = ['$q', 'MapService'];
+
+  function SearchService($q, MapService) {
+
+    return {
+      textSearch: textSearch,
+    };
+
+    function textSearch(text, userLocation) {
+      let request = {
+        query: text.name
+      };
+
+      if (userLocation) {
+        request.location = userLocation;
+        request.radius = 500;
       }
 
+      let d = $q.defer();
+      MapService.instance.places.textSearch(request,
+        function(res, status) {
+          if (status === 'OK') {
+            d.resolve(res);
+          }
+          else {
+            d.reject(status);
+          }
+        });
+
+        return d.promise;
     }
-    
-  };
-}])
-app.service('mapService', ['$http', function($http) {
-  let self = this;
-
-  self.getNearby = function(center, radius, keyword) {
-    let url = buildUrl(center, radius, keyword)
-
-    $http({
-      method: 'GET',
-      url: url
-    }).then(function(res) {
-      return res
-    });
   }
 
-  let buildUrl = function(center, radius, keyword) {
-    let baseUrl = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-    let url = baseUrl;
-
-    url += 'location=' + center.latitude + ',' + center.longitude
-    url += '&radius=' + radius;
-    url += '&keyword=' + keyword;
-
-    return url
-  }
-
-}]);
-// app.directive('mapsPagination', [function() {
-//   return {
-//     restrict: 'E',
-//     scope: false,
-//     template: '<small class="text-muted">Showing results 1 to {{currentCount}}</small><a href="#" ng-click="getNextPage()"> More </a>',    
-//     link: function(scope, ele, attrs) {
-
-//       let currentCount = scope.markers.length;
-
-//       scope.getNextPage = function() {
-//         let hasNextPage = scope.pagination.hasNextPage;
-//         if (!hasNextPage) {
-//           return;
-//         }
-//         console.log(scope.pagination)
-//         scope.pagination.nextPage();
-//         hasNextPage = scope.pagination.hasNextPage;
-//         currentCount += scope.markers.length;
-//         // scope.$apply();
-//         console.log(currentCount)
-//       }
-//     }
-//   }
-// }]);
+})();
