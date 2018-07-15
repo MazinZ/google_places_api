@@ -1,3 +1,5 @@
+A simple AngularJS app that utilizes the Google Places API.
+
 ![alt text](https://i.imgur.com/VlXDkgs.png "Map1")
 ![alt text](https://i.imgur.com/WzBojHO.png "Map2")
 
