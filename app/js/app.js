@@ -2,13 +2,13 @@
 
 (function() {
   angular
-      .module('zenefitsMap', [
+      .module('googlePlaces', [
         'ngMap', 
         'ui.bootstrap'
       ]);
 
   angular
-      .module('zenefitsMap')
+      .module('googlePlaces')
       .config(config);
 
   function config($locationProvider) {

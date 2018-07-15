@@ -1,6 +1,6 @@
 (function() {
   angular
-      .module('zenefitsMap')
+      .module('googlePlaces')
       .controller('MapController', MapController);
 
   MapController.$inject = ['MapService', 'SearchService'];

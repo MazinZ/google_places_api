@@ -1,6 +1,6 @@
 (function() {
   angular
-      .module('zenefitsMap')
+      .module('googlePlaces')
       .factory('MapService', MapService);
 
   MapService.$inject = ['NgMap'];
